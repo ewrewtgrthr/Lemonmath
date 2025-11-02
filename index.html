@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lemon Games</title>
+<style>
+  /* Reset & layout */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    color: #eee;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Background particles */
+  #particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    animation: float 10s linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(0) translateX(0) scale(0.5); opacity:0.3; }
+    50% { transform: translateY(-300px) translateX(50px) scale(1); opacity:0.6; }
+    100% { transform: translateY(0) translateX(0) scale(0.5); opacity:0.3; }
+  }
+
+  header {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(90deg, #ff4f70, #ff7096);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    z-index: 2;
+    position: relative;
+    letter-spacing: 1px;
+  }
+
+  #container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  iframe {
+    width: 800px;
+    height: 450px;
+    max-width: 90%;
+    max-height: 80%;
+    border: none;
+    border-radius: 20px;
+    background: #000;
+    display: none;
+    box-shadow: 0 0 30px #ff4f70, 0 0 60px #ff7096, 0 0 90px #ff4f70;
+    border: 2px solid #ff4f70;
+    transition: all 0.3s ease;
+  }
+  iframe:hover {
+    box-shadow: 0 0 50px #ff4f70, 0 0 100px #ff7096, 0 0 150px #ff4f70;
+  }
+
+  /* Buttons */
+  .play-button {
+    padding: 20px 60px;
+    background: linear-gradient(135deg, #ff4f70, #ff7096);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1.3rem;
+    margin-top: 15px;
+    box-shadow: 0 0 20px #ff4f70, 0 0 40px #ff7096;
+    animation: glow 2s infinite alternate;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    z-index: 2;
+  }
+
+  @keyframes glow {
+    0% { box-shadow: 0 0 20px #ff4f70, 0 0 40px #ff7096; }
+    100% { box-shadow: 0 0 40px #ff4f70, 0 0 80px #ff7096; }
+  }
+
+  .play-button:hover {
+    transform: scale(1.1);
+  }
+
+  .fullscreen-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #444;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    z-index: 2;
+  }
+  .fullscreen-button:hover {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.05);
+  }
+
+  footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #bbb;
+    padding: 12px;
+    background: linear-gradient(90deg, #222, #111);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.6);
+    z-index: 2;
+  }
+
+  #loading {
+    position: absolute;
+    font-size: 1.3rem;
+    color: #ff7096;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 2;
+    text-shadow: 0 0 10px #ff4f70, 0 0 20px #ff7096;
+  }
+
+  /* Password overlay */
+  #password-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.97);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 1000;
+  }
+
+  #password-overlay input {
+    padding: 15px 25px;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    border: none;
+    margin-bottom: 20px;
+    outline: none;
+    width: 280px;
+    background: #222;
+    color: #fff;
+    box-shadow: 0 0 15px #ff4f70;
+    transition: box-shadow 0.3s;
+  }
+  #password-overlay input:focus {
+    box-shadow: 0 0 30px #ff7096;
+  }
+
+  #password-overlay button {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #ff4f70, #ff7096);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 0 20px #ff4f70, 0 0 40px #ff7096;
+    animation: glow 2s infinite alternate;
+  }
+  #password-overlay button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px #ff4f70, 0 0 80px #ff7096;
+  }
+
+  #password-error {
+    color: #ff4444;
+    margin-top: 12px;
+    font-weight: 500;
+    text-shadow: 0 0 5px #ff0000;
+  }
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<header>Lemon Games</header>
+
+<div id="container">
+  <iframe id="fr" allowfullscreen></iframe>
+  <div id="loading">Loading game...</div>
+  <button class="play-button" type="button" onclick="PlayTo(this)">Play</button>
+  <button class="fullscreen-button" type="button" onclick="openFullscreen()">⛶</button>
+
+  <!-- Password overlay -->
+  <div id="password-overlay">
+    <input type="password" id="password-input" placeholder="Enter password" />
+    <button onclick="checkPassword()">Enter</button>
+    <div id="password-error"></div>
+  </div>
+</div>
+
+<footer>© 2025 Lemon Games</footer>
+
+<script>
+  const FILE_URL = "https://cdn.jsdelivr.net/gh/PlanetDogeCodes/EagletcraftX@main/egcfixed.xml";
+  const PASSWORD = "lemon123"; // Your password
+
+  // Particle background generation
+  const particlesContainer = document.getElementById('particles');
+  for(let i=0; i<60; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.top = Math.random()*100 + '%';
+    p.style.left = Math.random()*100 + '%';
+    p.style.width = p.style.height = Math.random()*3 + 1 + 'px';
+    p.style.animationDuration = (5 + Math.random()*10) + 's';
+    p.style.opacity = Math.random();
+    particlesContainer.appendChild(p);
+  }
+
+  function checkPassword() {
+    const input = document.getElementById("password-input").value;
+    const errorDiv = document.getElementById("password-error");
+
+    if(input === PASSWORD) {
+      document.getElementById("password-overlay").style.display = "none";
+    } else {
+      errorDiv.textContent = "Wrong password! Closing tab...";
+      setTimeout(() => window.close(), 1500);
+    }
+  }
+
+  async function getFile() {
+    const response = await fetch(FILE_URL);
+    return await response.text();
+  }
+
+  async function PlayTo(button) {
+    const iframe = document.getElementById("fr");
+    const loading = document.getElementById("loading");
+    button.style.display = "none";
+    loading.style.display = "block";
+    try {
+      const text = await getFile();
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(text);
+      iframe.contentDocument.close();
+      iframe.style.display = "block";
+    } catch (err) {
+      alert("Game failed to load.");
+      console.error(err);
+    }
+    loading.style.display = "none";
+  }
+
+  function openFullscreen() {
+    const iframe = document.getElementById("fr");
+    if (iframe.requestFullscreen) iframe.requestFullscreen();
+    else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+    else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+  }
+</script>
+</body>
+</html>

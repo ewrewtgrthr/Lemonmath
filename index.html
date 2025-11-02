@@ -1,467 +1,104 @@
+<Module>
+<ModulePrefs title="Lemon Games | Portal"/>
+<Content type="html">
+<![CDATA[
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lemon Games - Eaglercraft 1.8.8</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<title>Lemon Games</title>
 <style>
-  /* Basic reset & dark theme */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { 
-    height: 100%; 
-    font-family: 'Poppins', sans-serif; 
-    background: #0d0d0d; 
-    color: #fff; 
-    display: flex; 
-    flex-direction: column;
-    overflow: hidden;
-  }
-  
-  /* Animated gradient header */
-  header {
-    text-align: center;
-    padding: 24px 0;
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(270deg, #ff3c3c, #ffdd3c, #3cff88, #3cafff, #ff3c3c);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient 8s ease infinite;
-    letter-spacing: 2px;
-    position: relative;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  @keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  
-  /* Version badge */
-  .version-badge {
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
-    background: rgba(60, 175, 255, 0.2);
-    border: 2px solid rgba(60, 175, 255, 0.4);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    color: #3cafff;
-    font-weight: 600;
-  }
-  
-  /* Main container */
-  #container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding: 20px;
-  }
-  
-  /* Game iframe with performance optimizations */
-  iframe {
-    width: 95%;
-    max-width: 1600px;
-    height: 85vh;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 
-      0 10px 40px rgba(0,0,0,0.6),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
-    display: none;
-    background: #000;
-    /* Performance optimizations */
-    will-change: transform;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    /* Allow interaction */
-    pointer-events: auto;
-  }
-  
-  iframe.show {
-    display: block;
-    animation: fadeIn 0.4s ease-out;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.98); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  
-  /* Loading indicator */
-  #loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: none;
-    text-align: center;
-  }
-  
-  #loading.show {
-    display: block;
-  }
-  
-  .spinner {
-    width: 50px;
-    height: 50px;
-    margin: 0 auto 15px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top-color: #3cafff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  .loading-text {
-    font-size: 1.2rem;
-    color: #aaa;
-    font-weight: 600;
-  }
-  
-  /* Play button */
-  .play-button {
-    padding: 20px 60px;
-    font-size: 1.3rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    background: linear-gradient(135deg, #1a1a1a, #2d2d2d, #1a1a1a);
-    background-size: 200% 200%;
-    color: #fff;
-    box-shadow: 
-      0 8px 20px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.1);
-    transition: all 0.3s ease;
-    z-index: 2;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .play-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  .play-button:hover {
-    transform: translateY(-2px) scale(1.05);
-    background: linear-gradient(135deg, #252525, #3a3a3a, #252525);
-    box-shadow: 
-      0 12px 30px rgba(0,0,0,0.5),
-      inset 0 1px 0 rgba(255,255,255,0.2);
-    background-position: 100% 0;
-  }
-  
-  .play-button:hover::before {
-    left: 100%;
-  }
-  
-  .play-button:active {
-    transform: translateY(0) scale(1.02);
-  }
-  
-  /* Control buttons container */
-  .controls {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: none;
-    gap: 10px;
-    z-index: 10;
-  }
-  
-  .controls.show {
-    display: flex;
-    animation: slideIn 0.3s ease-out;
-  }
-  
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  
-  /* Control buttons */
-  .control-btn {
-    padding: 10px 18px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    color: #fff;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  .control-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-  
-  .control-btn:active {
-    transform: translateY(0);
-  }
-  
-  /* Footer */
-  footer {
-    text-align: center;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.03);
-    font-size: 0.9rem;
-    color: #666;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-  }
-  
-  /* Performance tips popup */
-  .performance-tips {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(60, 175, 255, 0.3);
-    border-radius: 16px;
-    padding: 28px 36px;
-    max-width: 500px;
-    display: none;
-    z-index: 100;
-  }
-  
-  .performance-tips.show {
-    display: block;
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  .tips-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #3cafff;
-    margin-bottom: 16px;
-    text-align: center;
-  }
-  
-  .tips-content {
-    margin-bottom: 20px;
-    line-height: 1.8;
-  }
-  
-  .tips-content p {
-    color: #ddd;
-    font-size: 0.95rem;
-    margin-bottom: 8px;
-  }
-  
-  .tips-content strong {
-    color: #3cafff;
-  }
-  
-  .tips-close {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #3cafff, #3c88ff);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  .tips-close:hover {
-    background: linear-gradient(135deg, #4db8ff, #4d90ff);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(60, 175, 255, 0.4);
-  }
-  
-  /* Help button */
-  .help-btn {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 45px;
-    height: 45px;
-    background: rgba(60, 175, 255, 0.2);
-    border: 2px solid rgba(60, 175, 255, 0.4);
-    border-radius: 50%;
-    color: #3cafff;
-    font-size: 1.3rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .help-btn:hover {
-    background: rgba(60, 175, 255, 0.3);
-    border-color: #3cafff;
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(60, 175, 255, 0.3);
-  }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    header { font-size: 2rem; padding: 18px 0; }
-    .version-badge { font-size: 0.75rem; padding: 6px 12px; right: 10px; }
-    iframe { width: 98%; height: 75vh; }
-    .play-button { padding: 16px 40px; font-size: 1.1rem; }
-    .controls { top: 10px; right: 10px; flex-direction: column; }
-    .performance-tips { max-width: 90%; padding: 20px; }
-  }
+html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; font-family:Arial,sans-serif; background:#111; color:#fff;}
+#menu { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:350px; background:#222; border-radius:20px; padding:30px; box-shadow:0 0 40px rgba(0,0,0,0.5); text-align:center; z-index:10;}
+h1 { font-size:32px; margin-bottom:20px; color:#fff; text-shadow:0 0 5px #000;}
+button { padding:15px 40px; font-size:18px; border:none; border-radius:10px; background:#fff; color:#111; cursor:pointer; transition:0.2s; }
+button:hover { background:#ccc; }
+#loading { display:none; margin-top:20px; font-size:16px; color:#fff; text-align:center;}
+#game_frame { width:100%; height:100%; display:none; justify-content:center; align-items:center; background:#000;}
+
+/* Floating dots */
+.dot { position:absolute; width:5px; height:5px; border-radius:50%; animation: floatDots linear infinite; }
+@keyframes floatDots {
+  0% { transform: translateY(0) translateX(0); opacity:1; }
+  50% { opacity:0.3; }
+  100% { transform: translateY(-100vh) translateX(50px); opacity:1; }
+}
+
+/* cruel loading spinner */
+.cruel-spinner { border: 5px solid #333; border-top: 5px solid #fff; border-radius: 50%; width: 50px; height: 50px; margin: 20px auto; animation: spin 1s linear infinite;}
+@keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
 </style>
-</head>
-<body>
-
-<header>
-  🍋 Lemon Games
-  <div class="version-badge">v1.8.8 WASM</div>
-</header>
-
-<div id="container">
-  <iframe id="gameFrame" allowfullscreen></iframe>
-  
-  <div id="loading">
-    <div class="spinner"></div>
-    <div class="loading-text">Loading Eaglercraft 1.8.8...</div>
-  </div>
-  
-  <div class="performance-tips" id="perfTips">
-    <div class="tips-title">⚡ Performance Tips</div>
-    <div class="tips-content">
-      <p><strong>✅ You're using the best version!</strong></p>
-      <p><strong>WASM version</strong> = Faster & more stable than old versions</p>
-      <p></p>
-      <p><strong>In-Game Settings (ESC → Options):</strong></p>
-      <p>• <strong>Video Settings:</strong> Render Distance = Tiny/Short</p>
-      <p>• Graphics: Fast | Clouds: Off</p>
-      <p>• Smooth Lighting: Off | Particles: Minimal</p>
-      <p></p>
-      <p><strong>System Performance:</strong></p>
-      <p>• Close other tabs and applications</p>
-      <p>• Use wired ethernet instead of WiFi</p>
-      <p>• Make sure nothing is downloading</p>
-    </div>
-    <button class="tips-close" onclick="closeTips()">Got it!</button>
-  </div>
-  
-  <button class="play-button" id="playBtn" onclick="playGame()">▶ Play Game</button>
-  
-  <div class="controls" id="controls">
-    <button class="control-btn" onclick="fullscreenGame()">⛶ Fullscreen</button>
-    <button class="control-btn" onclick="reloadGame()">↻ Reload</button>
-  </div>
-  
-  <button class="help-btn" onclick="showTips()" title="Performance Tips">?</button>
-</div>
-
-<footer>© 2025 Lemon Games | Eaglercraft 1.8.8 WASM Edition</footer>
-
+<script src="https://cdn.jsdelivr.net/gh/mece188/feh@main/classes.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/mece188/feh@main/fix-webm-duration.js"></script>
 <script>
-// Using q13x.com which hosts working Eaglercraft builds
-const GAME_URL = "https://eaglercraft.q13x.com/";
-const iframe = document.getElementById('gameFrame');
-const loading = document.getElementById('loading');
-const playBtn = document.getElementById('playBtn');
-const controls = document.getElementById('controls');
-const perfTips = document.getElementById('perfTips');
+window.addEventListener('load', () => {
+  window.focus();
 
-// Show performance tips on first load
-let tipsShown = false;
-
-function playGame() {
-  playBtn.style.display = 'none';
-  loading.classList.add('show');
-  
-  // Load the Eaglercraft WASM version directly
-  iframe.src = GAME_URL;
-  
-  // Wait for iframe to fully load
-  iframe.onload = () => {
-    loading.classList.remove('show');
-    iframe.classList.add('show');
-    controls.classList.add('show');
-    
-    // Show performance tips on first launch
-    if (!tipsShown) {
-      setTimeout(() => {
-        perfTips.classList.add('show');
-        tipsShown = true;
-      }, 3000);
-    }
-  };
-}
-
-function showTips() {
-  perfTips.classList.add('show');
-}
-
-function closeTips() {
-  perfTips.classList.remove('show');
-}
-
-function fullscreenGame() {
-  if (iframe.requestFullscreen) {
-    iframe.requestFullscreen();
-  } else if (iframe.webkitRequestFullscreen) {
-    iframe.webkitRequestFullscreen();
-  } else if (iframe.msRequestFullscreen) {
-    iframe.msRequestFullscreen();
+  if (!window.eaglercraftXOpts) {
+    window.eaglercraftXOpts = {
+      container: "game_frame",
+      assetsURI: "https://cdn.jsdelivr.net/gh/mece188/feh@main/assets.epk",
+      localesURI: "lang/",
+      servers: [
+        { addr: "wss://mc.arch.lol/", name: "ArchMC" }
+      ]
+    };
   }
-}
 
-function reloadGame() {
-  iframe.src = '';
-  iframe.classList.remove('show');
-  controls.classList.remove('show');
-  playBtn.style.display = 'block';
-  
-  // Small delay before allowing replay
-  setTimeout(() => {
-    playBtn.disabled = false;
-  }, 500);
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  if (e.key.toLowerCase() === 'f' && iframe.classList.contains('show')) {
-    fullscreenGame();
-  } else if (e.key.toLowerCase() === 'r' && iframe.classList.contains('show') && e.ctrlKey) {
-    e.preventDefault();
-    reloadGame();
+  // Create black & white floating dots
+  const dots = [];
+  for(let i=0;i<60;i++){
+    const dot = document.createElement('div');
+    dot.className='dot';
+    dot.style.background = Math.random() < 0.5 ? '#fff' : '#000';
+    dot.style.left=Math.random()*100+'vw';
+    dot.style.top=Math.random()*100+'vh';
+    dot.style.width=(3+Math.random()*6)+'px';
+    dot.style.height=dot.style.width;
+    dot.style.animationDuration=(4+Math.random()*6)+'s';
+    document.body.appendChild(dot);
+    dots.push(dot);
   }
+
+  const menu = document.getElementById('menu');
+  const gameFrame = document.getElementById('game_frame');
+  const playBtn = document.getElementById('play_game');
+  const loadingDiv = document.getElementById('loading');
+
+  playBtn.addEventListener('click', () => {
+    // hide menu
+    menu.style.display = 'none';
+
+    // remove floating dots
+    dots.forEach(d => d.remove());
+
+    // show game frame and loading spinner
+    gameFrame.style.display = 'flex';
+    loadingDiv.style.display = 'block';
+
+    setTimeout(() => {
+      try { main(); } catch(e) { console.error("Error starting EaglercraftX:", e);}
+    }, 1000);
+  });
 });
 </script>
-
+</head>
+<body>
+<div id="menu">
+  <h1>Lemon Games</h1>
+  <button id="play_game">Play</button>
+  <div id="loading">
+    <div class="cruel-spinner"></div>
+    Loading EaglercraftX...
+  </div>
+</div>
+<div id="game_frame"></div>
+<div class="_eaglercraftX_wrapper_element"></div>
+<div id="_eaglercraftX_crashReason" style="display:none;"></div>
+<div id="_eaglercraftX_crashUserAgent" style="display:none;"></div>
 </body>
 </html>
+]]>
+</Content>
+</Module>

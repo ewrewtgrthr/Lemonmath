@@ -8,9 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lemon Games</title>
 <style>
-html, body { margin:0; padding:0; width:100%; height:100%; font-family:'Poppins',sans-serif; overflow:hidden; background:#0d0d0d; color:#fff; display:flex; justify-content:center; align-items:center; }
+html, body { margin:0; padding:0; width:100%; height:100%; font-family:'Poppins',sans-serif; overflow:hidden; background:#0d0d0d; color:#fff; }
 
-#menu { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10; transition:opacity 0.5s ease; }
+#menu { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10; transition:opacity 0.5s ease; background:#0d0d0d; }
 #menu.fade-out { opacity:0; pointer-events:none; }
 
 h1 { font-size:3rem; margin-bottom:2rem; text-shadow:0 0 20px rgba(60,175,255,0.5); }
@@ -19,24 +19,24 @@ h1 { font-size:3rem; margin-bottom:2rem; text-shadow:0 0 20px rgba(60,175,255,0.
 .play-button:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(60,175,255,0.5); }
 
 /* Live Counter */
-.live-counter { position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.7); padding:12px 20px; border-radius:25px; display:flex; align-items:center; gap:10px; backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.1); z-index:20; }
+.live-counter { position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.8); padding:12px 20px; border-radius:25px; display:flex; align-items:center; gap:10px; backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.1); z-index:1000; }
 .live-dot { width:12px; height:12px; background:#ff3030; border-radius:50%; animation:pulse 2s ease-in-out infinite; box-shadow:0 0 10px #ff3030; }
 @keyframes pulse { 0%, 100% { opacity:1; transform:scale(1); } 50% { opacity:0.6; transform:scale(0.9); } }
-.counter-text { font-size:0.9rem; font-weight:600; color:#fff; }
+.counter-text { font-size:0.9rem; font-weight:600; color:#fff; white-space:nowrap; }
 .counter-number { font-size:1.1rem; font-weight:700; color:#3cafff; margin-left:5px; }
 
-#loading { position:absolute; top:0; left:0; width:100%; height:100%; background:#111; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:9; }
+#loading { position:absolute; top:0; left:0; width:100%; height:100%; background:#111; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:999; }
 .spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.1); border-top-color:#3cafff; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:15px; }
 @keyframes spin { to { transform:rotate(360deg); } }
 .loading-text { font-size:1.2rem; color:#aaa; font-weight:600; text-align:center; max-width:300px; }
 
-#game_frame { width:100%; height:100%; display:none; background:#000; position:absolute; top:0; left:0; }
+#game_frame { width:100%; height:100%; display:none; position:absolute; top:0; left:0; z-index:1; }
 
 /* Watermark */
-.watermark { position:fixed; bottom:15px; left:50%; transform:translateX(-50%); font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.4); z-index:100; text-shadow:0 1px 3px rgba(0,0,0,0.5); pointer-events:none; letter-spacing:1px; }
+.watermark { position:fixed; bottom:15px; left:50%; transform:translateX(-50%); font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.4); z-index:1000; text-shadow:0 1px 3px rgba(0,0,0,0.5); pointer-events:none; letter-spacing:1px; }
 
-/* Smooth floating dots */
-.dot { position:absolute; width:6px; height:6px; background:#fff; border-radius:50%; opacity:0.6; pointer-events:none; transition:opacity 0.5s ease; will-change:transform; }
+/* Simplified dots - only show in menu */
+.dot { position:absolute; width:4px; height:4px; background:#fff; border-radius:50%; opacity:0.5; pointer-events:none; }
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/mece188/feh@main/classes.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/mece188/feh@main/fix-webm-duration.js"></script>
@@ -50,7 +50,7 @@ h1 { font-size:3rem; margin-bottom:2rem; text-shadow:0 0 20px rgba(60,175,255,0.
 
 <div class="live-counter">
   <div class="live-dot"></div>
-  <span class="counter-text">Visitors Online:<span class="counter-number" id="playerCount">...</span></span>
+  <span class="counter-text">Online:<span class="counter-number" id="playerCount">...</span></span>
 </div>
 
 <div id="loading">
@@ -63,136 +63,96 @@ h1 { font-size:3rem; margin-bottom:2rem; text-shadow:0 0 20px rgba(60,175,255,0.
 <div class="watermark">LEMON GAMES</div>
 
 <script>
-// Real visitor counter using storage
-const STORAGE_KEY = 'lemon-games-visitors';
-const SESSION_KEY = 'lemon-session-' + Date.now() + '-' + Math.random();
-const HEARTBEAT_INTERVAL = 5000; // 5 seconds
-const VISITOR_TIMEOUT = 15000; // 15 seconds
+// Simplified real visitor counter
+const VISITOR_KEY = 'lemon-visitors';
+const SESSION_ID = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+const HEARTBEAT = 3000; // 3 seconds
+const TIMEOUT = 10000; // 10 seconds
+let heartbeatInterval;
 
-let visitorCount = 0;
 const playerCountEl = document.getElementById('playerCount');
 
-async function updateVisitorCount() {
+async function updateCount() {
   try {
-    // Get current visitors
     let visitors = {};
+    
     try {
-      const result = await window.storage.get(STORAGE_KEY, true);
-      if (result && result.value) {
-        visitors = JSON.parse(result.value);
+      const data = await window.storage.get(VISITOR_KEY, true);
+      if (data && data.value) {
+        visitors = JSON.parse(data.value);
       }
     } catch (e) {
-      // Key doesn't exist yet, start fresh
       visitors = {};
     }
 
-    // Clean up stale visitors
     const now = Date.now();
-    Object.keys(visitors).forEach(key => {
-      if (now - visitors[key] > VISITOR_TIMEOUT) {
+    
+    // Remove old sessions
+    for (let key in visitors) {
+      if (now - visitors[key] > TIMEOUT) {
         delete visitors[key];
       }
-    });
+    }
 
-    // Add/update current session
-    visitors[SESSION_KEY] = now;
+    // Add this session
+    visitors[SESSION_ID] = now;
 
-    // Save back to storage
-    await window.storage.set(STORAGE_KEY, JSON.stringify(visitors), true);
+    // Save
+    await window.storage.set(VISITOR_KEY, JSON.stringify(visitors), true);
 
-    // Update count
-    visitorCount = Object.keys(visitors).length;
-    playerCountEl.textContent = visitorCount;
+    // Update display
+    const count = Object.keys(visitors).length;
+    playerCountEl.textContent = count;
+    
   } catch (error) {
-    console.error('Storage error:', error);
-    // Fallback to showing at least 1 (this user)
-    playerCountEl.textContent = '1';
+    console.error('Counter error:', error);
+    playerCountEl.textContent = '1+';
   }
 }
 
-// Initial update
-updateVisitorCount();
+// Start counter
+updateCount();
+heartbeatInterval = setInterval(updateCount, HEARTBEAT);
 
-// Send heartbeat every 5 seconds
-setInterval(updateVisitorCount, HEARTBEAT_INTERVAL);
-
-// Cleanup on page unload
+// Cleanup on leave
 window.addEventListener('beforeunload', async () => {
+  clearInterval(heartbeatInterval);
   try {
-    const result = await window.storage.get(STORAGE_KEY, true);
-    if (result && result.value) {
-      const visitors = JSON.parse(result.value);
-      delete visitors[SESSION_KEY];
-      await window.storage.set(STORAGE_KEY, JSON.stringify(visitors), true);
+    const data = await window.storage.get(VISITOR_KEY, true);
+    if (data && data.value) {
+      const visitors = JSON.parse(data.value);
+      delete visitors[SESSION_ID];
+      await window.storage.set(VISITOR_KEY, JSON.stringify(visitors), true);
     }
-  } catch (e) {
-    // Ignore errors on unload
-  }
+  } catch (e) {}
 });
 
-// Optimized smooth floating dots with better performance
+// Minimal dots for menu only
 const dots = [];
-const numDots = 100;
+const numDots = 40; // Reduced significantly
 
 for(let i = 0; i < numDots; i++){
   const dot = document.createElement('div');
   dot.className = 'dot';
-  const size = Math.random() * 3 + 2;
-  dot.style.width = dot.style.height = size + 'px';
-  
-  const x = Math.random() * window.innerWidth;
-  const y = Math.random() * window.innerHeight;
-  
-  dot.style.left = x + 'px';
-  dot.style.top = y + 'px';
-  dot.style.opacity = Math.random() * 0.4 + 0.3;
-  
-  const colors = ['#fff', '#3cafff', '#ffd700'];
-  dot.style.background = colors[Math.floor(Math.random() * colors.length)];
-  
-  dot.dataset.x = x;
-  dot.dataset.y = y;
-  dot.dataset.vx = (Math.random() - 0.5) * 0.3;
-  dot.dataset.vy = (Math.random() - 0.5) * 0.3;
-  
-  document.body.appendChild(dot);
+  dot.style.left = Math.random() * 100 + '%';
+  dot.style.top = Math.random() * 100 + '%';
+  document.getElementById('menu').appendChild(dot);
   dots.push(dot);
 }
 
-let lastTime = performance.now();
-
-function animateDots(currentTime) {
-  const deltaTime = (currentTime - lastTime) / 16;
-  lastTime = currentTime;
-  
-  dots.forEach(dot => {
-    let x = parseFloat(dot.dataset.x);
-    let y = parseFloat(dot.dataset.y);
-    const vx = parseFloat(dot.dataset.vx);
-    const vy = parseFloat(dot.dataset.vy);
-    
-    x += vx * deltaTime;
-    y += vy * deltaTime;
-    
-    if(x < -10) x = window.innerWidth + 10;
-    if(x > window.innerWidth + 10) x = -10;
-    if(y < -10) y = window.innerHeight + 10;
-    if(y > window.innerHeight + 10) y = -10;
-    
-    dot.dataset.x = x;
-    dot.dataset.y = y;
-    dot.style.transform = `translate(${x}px, ${y}px)`;
+// Simple static animation for dots
+let dotFrame = 0;
+function animateDots() {
+  dotFrame++;
+  dots.forEach((dot, i) => {
+    const offset = (dotFrame + i * 10) * 0.02;
+    dot.style.opacity = 0.3 + Math.sin(offset) * 0.2;
   });
-  
-  requestAnimationFrame(animateDots);
+  if (document.getElementById('menu').style.display !== 'none') {
+    requestAnimationFrame(animateDots);
+  }
 }
-
-dots.forEach(dot => {
-  dot.style.left = '0';
-  dot.style.top = '0';
-});
-
-animateDots(performance.now());
+animateDots();
 
 const playBtn = document.getElementById('playBtn');
 const menu = document.getElementById('menu');
@@ -201,16 +161,14 @@ const gameFrame = document.getElementById('game_frame');
 
 playBtn.addEventListener('click', () => {
     menu.classList.add('fade-out');
-    dots.forEach(dot => { 
-      dot.style.transition = 'opacity 0.5s ease'; 
-      dot.style.opacity = '0'; 
-    });
 
     setTimeout(() => {
+        menu.style.display = 'none';
         loadingDiv.style.display = 'flex';
+        
         setTimeout(() => {
             loadingDiv.style.display = 'none';
-            gameFrame.style.display = 'flex';
+            gameFrame.style.display = 'block';
 
             if(!window.eaglercraftXOpts){
               window.eaglercraftXOpts = {

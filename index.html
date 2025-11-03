@@ -1,104 +1,118 @@
 <Module>
-<ModulePrefs title="Lemon Games | Portal"/>
+<ModulePrefs title="Lemon Games | Eaglercraft"/>
 <Content type="html">
-<![CDATA[
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lemon Games</title>
 <style>
-html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; font-family:Arial,sans-serif; background:#111; color:#fff;}
-#menu { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:350px; background:#222; border-radius:20px; padding:30px; box-shadow:0 0 40px rgba(0,0,0,0.5); text-align:center; z-index:10;}
-h1 { font-size:32px; margin-bottom:20px; color:#fff; text-shadow:0 0 5px #000;}
-button { padding:15px 40px; font-size:18px; border:none; border-radius:10px; background:#fff; color:#111; cursor:pointer; transition:0.2s; }
-button:hover { background:#ccc; }
-#loading { display:none; margin-top:20px; font-size:16px; color:#fff; text-align:center;}
-#game_frame { width:100%; height:100%; display:none; justify-content:center; align-items:center; background:#000;}
-
-/* Floating dots */
-.dot { position:absolute; width:5px; height:5px; border-radius:50%; animation: floatDots linear infinite; }
-@keyframes floatDots {
-  0% { transform: translateY(0) translateX(0); opacity:1; }
-  50% { opacity:0.3; }
-  100% { transform: translateY(-100vh) translateX(50px); opacity:1; }
-}
-
-/* cruel loading spinner */
-.cruel-spinner { border: 5px solid #333; border-top: 5px solid #fff; border-radius: 50%; width: 50px; height: 50px; margin: 20px auto; animation: spin 1s linear infinite;}
-@keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+html, body { margin:0; padding:0; width:100%; height:100%; font-family:'Poppins',sans-serif; overflow:hidden; background:#0d0d0d; color:#fff; display:flex; justify-content:center; align-items:center; }
+#menu { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10; transition:opacity 0.5s; }
+#menu.fade-out { opacity:0; pointer-events:none; }
+h1 { font-size:3rem; margin-bottom:2rem; }
+.play-button { padding:1rem 3rem; font-size:1.5rem; font-weight:700; border:none; border-radius:10px; cursor:pointer; background:#3cafff; color:#fff; transition: transform 0.2s; }
+.play-button:hover { transform:scale(1.05); }
+#loading { position:absolute; top:0; left:0; width:100%; height:100%; background:#111; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:9; }
+.spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.1); border-top-color:#3cafff; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:15px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-text { font-size:1.2rem; color:#aaa; font-weight:600; text-align:center; max-width:300px; }
+#game_frame { width:100%; height:100%; display:none; background:#000; position:absolute; top:0; left:0; }
+.dot { position:absolute; width:6px; height:6px; background:#fff; border-radius:50%; opacity:0.7; }
 </style>
-<script src="https://cdn.jsdelivr.net/gh/mece188/feh@main/classes.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/mece188/feh@main/fix-webm-duration.js"></script>
-<script>
-window.addEventListener('load', () => {
-  window.focus();
-
-  if (!window.eaglercraftXOpts) {
-    window.eaglercraftXOpts = {
-      container: "game_frame",
-      assetsURI: "https://cdn.jsdelivr.net/gh/mece188/feh@main/assets.epk",
-      localesURI: "lang/",
-      servers: [
-        { addr: "wss://mc.arch.lol/", name: "ArchMC" }
-      ]
-    };
-  }
-
-  // Create black & white floating dots
-  const dots = [];
-  for(let i=0;i<60;i++){
-    const dot = document.createElement('div');
-    dot.className='dot';
-    dot.style.background = Math.random() < 0.5 ? '#fff' : '#000';
-    dot.style.left=Math.random()*100+'vw';
-    dot.style.top=Math.random()*100+'vh';
-    dot.style.width=(3+Math.random()*6)+'px';
-    dot.style.height=dot.style.width;
-    dot.style.animationDuration=(4+Math.random()*6)+'s';
-    document.body.appendChild(dot);
-    dots.push(dot);
-  }
-
-  const menu = document.getElementById('menu');
-  const gameFrame = document.getElementById('game_frame');
-  const playBtn = document.getElementById('play_game');
-  const loadingDiv = document.getElementById('loading');
-
-  playBtn.addEventListener('click', () => {
-    // hide menu
-    menu.style.display = 'none';
-
-    // remove floating dots
-    dots.forEach(d => d.remove());
-
-    // show game frame and loading spinner
-    gameFrame.style.display = 'flex';
-    loadingDiv.style.display = 'block';
-
-    setTimeout(() => {
-      try { main(); } catch(e) { console.error("Error starting EaglercraftX:", e);}
-    }, 1000);
-  });
-});
-</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/mece188/feh@main/classes.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/mece188/feh@main/fix-webm-duration.js"></script>
 </head>
 <body>
+
 <div id="menu">
-  <h1>Lemon Games</h1>
-  <button id="play_game">Play</button>
-  <div id="loading">
-    <div class="cruel-spinner"></div>
-    Loading EaglercraftX...
-  </div>
+  <h1>🍋 Lemon Games</h1>
+  <button class="play-button" id="playBtn">▶ Play</button>
 </div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading Eaglercraft 1.8.8 WASM...</div>
+</div>
+
 <div id="game_frame"></div>
-<div class="_eaglercraftX_wrapper_element"></div>
-<div id="_eaglercraftX_crashReason" style="display:none;"></div>
-<div id="_eaglercraftX_crashUserAgent" style="display:none;"></div>
+
+<script>
+// Full-screen floating dots
+const dots = [];
+const numDots = 150; // more dots for full screen
+for(let i=0;i<numDots;i++){
+  const dot = document.createElement('div');
+  dot.className='dot';
+  const size = Math.random()*4 + 2;
+  dot.style.width = dot.style.height = size+'px';
+  dot.style.left = Math.random()*window.innerWidth + 'px';
+  dot.style.top = Math.random()*window.innerHeight + 'px';
+  dot.style.background = Math.random()<0.5?'#fff':'#000';
+  dot.dataset.vx = (Math.random()*0.4-0.2); // x speed
+  dot.dataset.vy = (Math.random()*0.4-0.2); // y speed
+  document.body.appendChild(dot);
+  dots.push(dot);
+}
+
+function animateDots(){
+  dots.forEach(dot=>{
+    let x = parseFloat(dot.style.left);
+    let y = parseFloat(dot.style.top);
+    x += parseFloat(dot.dataset.vx);
+    y += parseFloat(dot.dataset.vy);
+
+    // Wrap around edges
+    if(x < 0) x = window.innerWidth;
+    if(x > window.innerWidth) x = 0;
+    if(y < 0) y = window.innerHeight;
+    if(y > window.innerHeight) y = 0;
+
+    dot.style.left = x + 'px';
+    dot.style.top = y + 'px';
+  });
+  requestAnimationFrame(animateDots);
+}
+animateDots();
+
+const playBtn=document.getElementById('playBtn');
+const menu=document.getElementById('menu');
+const loadingDiv=document.getElementById('loading');
+const gameFrame=document.getElementById('game_frame');
+
+playBtn.addEventListener('click',()=>{
+    menu.classList.add('fade-out');
+    dots.forEach(dot=>{ dot.style.transition='opacity 0.5s'; dot.style.opacity=0; });
+
+    setTimeout(()=>{
+        loadingDiv.style.display='flex';
+        setTimeout(()=>{
+            loadingDiv.style.display='none';
+            gameFrame.style.display='flex';
+
+            if(!window.eaglercraftXOpts){
+              window.eaglercraftXOpts={
+                container:"game_frame",
+                assetsURI:"https://cdn.jsdelivr.net/gh/mece188/feh@main/assets.epk",
+                localesURI:"lang/",
+                servers:[
+                  {addr:"wss://mc.arch.lol/", name:"ArchMC"},
+                  {addr:"wss://mc.asspixel.net", name:"AssPixel"},
+                  {addr:"wss://sus.shhnowisnottheti.me", name:"Ayunboom"},
+                  {addr:"wss://aeon-network.net/1.8", name:"Aeon"},
+                  {addr:"wss://zentic.org/", name:"Zentic"}
+                ]
+              };
+            }
+
+            try{ main(); } catch(e){ console.error("Error starting EaglercraftX:",e);}
+        },3000);
+    },500);
+});
+</script>
+
 </body>
 </html>
-]]>
 </Content>
 </Module>

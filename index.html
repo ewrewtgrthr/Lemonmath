@@ -8,35 +8,148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lemon Games</title>
 <style>
-html, body { margin:0; padding:0; width:100%; height:100%; font-family:'Poppins',sans-serif; overflow:hidden; background:#0d0d0d; color:#fff; }
+html, body { 
+  margin:0; 
+  padding:0; 
+  width:100%; 
+  height:100%; 
+  font-family:'Poppins',sans-serif; 
+  overflow:hidden; 
+  background:#0d0d0d; 
+  color:#fff; 
+}
 
-#menu { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10; transition:opacity 0.5s ease; background:#0d0d0d; }
-#menu.fade-out { opacity:0; pointer-events:none; }
+#menu { 
+  position:absolute; 
+  top:0; 
+  left:0; 
+  width:100%; 
+  height:100%; 
+  display:flex; 
+  flex-direction:column; 
+  justify-content:center; 
+  align-items:center; 
+  z-index:10; 
+  background:#0d0d0d; 
+}
 
-h1 { font-size:3rem; margin-bottom:2rem; text-shadow:0 0 20px rgba(60,175,255,0.5); }
+#menu.hidden { 
+  display:none; 
+}
 
-.play-button { padding:1rem 3rem; font-size:1.5rem; font-weight:700; border:none; border-radius:10px; cursor:pointer; background:#3cafff; color:#fff; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow:0 4px 15px rgba(60,175,255,0.3); }
-.play-button:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(60,175,255,0.5); }
+h1 { 
+  font-size:3rem; 
+  margin-bottom:2rem; 
+}
+
+.play-button { 
+  padding:1rem 3rem; 
+  font-size:1.5rem; 
+  font-weight:700; 
+  border:none; 
+  border-radius:10px; 
+  cursor:pointer; 
+  background:#3cafff; 
+  color:#fff; 
+}
+
+.play-button:hover { 
+  background:#2a9ae6; 
+}
 
 /* Live Counter */
-.live-counter { position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.8); padding:12px 20px; border-radius:25px; display:flex; align-items:center; gap:10px; backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.1); z-index:1000; }
-.live-dot { width:12px; height:12px; background:#ff3030; border-radius:50%; animation:pulse 2s ease-in-out infinite; box-shadow:0 0 10px #ff3030; }
-@keyframes pulse { 0%, 100% { opacity:1; transform:scale(1); } 50% { opacity:0.6; transform:scale(0.9); } }
-.counter-text { font-size:0.9rem; font-weight:600; color:#fff; white-space:nowrap; }
-.counter-number { font-size:1.1rem; font-weight:700; color:#3cafff; margin-left:5px; }
+.live-counter { 
+  position:fixed; 
+  top:20px; 
+  right:20px; 
+  background:rgba(0,0,0,0.8); 
+  padding:10px 16px; 
+  border-radius:20px; 
+  display:flex; 
+  align-items:center; 
+  gap:8px; 
+  z-index:9999; 
+  border:1px solid rgba(255,255,255,0.1);
+}
 
-#loading { position:absolute; top:0; left:0; width:100%; height:100%; background:#111; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:999; }
-.spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.1); border-top-color:#3cafff; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:15px; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.loading-text { font-size:1.2rem; color:#aaa; font-weight:600; text-align:center; max-width:300px; }
+.live-dot { 
+  width:10px; 
+  height:10px; 
+  background:#ff3030; 
+  border-radius:50%; 
+  animation:pulse 2s ease-in-out infinite; 
+}
 
-#game_frame { width:100%; height:100%; display:none; position:absolute; top:0; left:0; z-index:1; }
+@keyframes pulse { 
+  0%, 100% { opacity:1; } 
+  50% { opacity:0.5; } 
+}
+
+.counter-text { 
+  font-size:0.85rem; 
+  font-weight:600; 
+  color:#fff; 
+}
+
+.counter-number { 
+  color:#3cafff; 
+  margin-left:3px; 
+}
+
+#loading { 
+  position:absolute; 
+  top:0; 
+  left:0; 
+  width:100%; 
+  height:100%; 
+  background:#111; 
+  display:none; 
+  flex-direction:column; 
+  justify-content:center; 
+  align-items:center; 
+  z-index:9; 
+}
+
+.spinner { 
+  width:50px; 
+  height:50px; 
+  border:4px solid rgba(255,255,255,0.1); 
+  border-top-color:#3cafff; 
+  border-radius:50%; 
+  animation:spin 0.8s linear infinite; 
+  margin-bottom:15px; 
+}
+
+@keyframes spin { 
+  to { transform:rotate(360deg); } 
+}
+
+.loading-text { 
+  font-size:1.2rem; 
+  color:#aaa; 
+  font-weight:600; 
+}
+
+#game_frame { 
+  width:100%; 
+  height:100%; 
+  display:none; 
+  background:#000; 
+}
 
 /* Watermark */
-.watermark { position:fixed; bottom:15px; left:50%; transform:translateX(-50%); font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.4); z-index:1000; text-shadow:0 1px 3px rgba(0,0,0,0.5); pointer-events:none; letter-spacing:1px; }
-
-/* Simplified dots - only show in menu */
-.dot { position:absolute; width:4px; height:4px; background:#fff; border-radius:50%; opacity:0.5; pointer-events:none; }
+.watermark { 
+  position:fixed; 
+  bottom:15px; 
+  left:50%; 
+  transform:translateX(-50%); 
+  font-size:0.85rem; 
+  font-weight:600; 
+  color:rgba(255,255,255,0.3); 
+  z-index:9999; 
+  pointer-events:none; 
+  letter-spacing:1px; 
+}
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/mece188/feh@main/classes.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/mece188/feh@main/fix-webm-duration.js"></script>
@@ -50,12 +163,12 @@ h1 { font-size:3rem; margin-bottom:2rem; text-shadow:0 0 20px rgba(60,175,255,0.
 
 <div class="live-counter">
   <div class="live-dot"></div>
-  <span class="counter-text">Online:<span class="counter-number" id="playerCount">...</span></span>
+  <span class="counter-text">Online: <span class="counter-number" id="playerCount">...</span></span>
 </div>
 
 <div id="loading">
   <div class="spinner"></div>
-  <div class="loading-text">Loading Eaglercraft 1.8.8 WASM...</div>
+  <div class="loading-text">Loading Eaglercraft...</div>
 </div>
 
 <div id="game_frame"></div>
@@ -63,135 +176,92 @@ h1 { font-size:3rem; margin-bottom:2rem; text-shadow:0 0 20px rgba(60,175,255,0.
 <div class="watermark">LEMON GAMES</div>
 
 <script>
-// Simplified real visitor counter
-const VISITOR_KEY = 'lemon-visitors';
-const SESSION_ID = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-const HEARTBEAT = 3000; // 3 seconds
-const TIMEOUT = 10000; // 10 seconds
-let heartbeatInterval;
+// Live visitor counter - simplified and more reliable
+const VISITORS_KEY = 'lemon-live-count';
+const MY_ID = Date.now() + '-' + Math.random().toString(36).substr(2);
+let counterInterval;
 
-const playerCountEl = document.getElementById('playerCount');
-
-async function updateCount() {
+async function syncVisitors() {
   try {
-    let visitors = {};
+    let data = {};
     
+    // Get current data
     try {
-      const data = await window.storage.get(VISITOR_KEY, true);
-      if (data && data.value) {
-        visitors = JSON.parse(data.value);
+      const result = await window.storage.get(VISITORS_KEY, true);
+      if (result && result.value) {
+        data = JSON.parse(result.value);
       }
     } catch (e) {
-      visitors = {};
+      data = {};
     }
 
     const now = Date.now();
     
-    // Remove old sessions
-    for (let key in visitors) {
-      if (now - visitors[key] > TIMEOUT) {
-        delete visitors[key];
+    // Clean old entries (older than 8 seconds)
+    Object.keys(data).forEach(id => {
+      if (now - data[id] > 8000) {
+        delete data[id];
       }
-    }
+    });
 
-    // Add this session
-    visitors[SESSION_ID] = now;
+    // Add me
+    data[MY_ID] = now;
 
     // Save
-    await window.storage.set(VISITOR_KEY, JSON.stringify(visitors), true);
+    await window.storage.set(VISITORS_KEY, JSON.stringify(data), true);
 
-    // Update display
-    const count = Object.keys(visitors).length;
-    playerCountEl.textContent = count;
-    
-  } catch (error) {
-    console.error('Counter error:', error);
-    playerCountEl.textContent = '1+';
+    // Update UI
+    document.getElementById('playerCount').textContent = Object.keys(data).length;
+  } catch (err) {
+    console.error('Counter error:', err);
+    document.getElementById('playerCount').textContent = '?';
   }
 }
 
 // Start counter
-updateCount();
-heartbeatInterval = setInterval(updateCount, HEARTBEAT);
+syncVisitors();
+counterInterval = setInterval(syncVisitors, 2500);
 
-// Cleanup on leave
-window.addEventListener('beforeunload', async () => {
-  clearInterval(heartbeatInterval);
-  try {
-    const data = await window.storage.get(VISITOR_KEY, true);
-    if (data && data.value) {
-      const visitors = JSON.parse(data.value);
-      delete visitors[SESSION_ID];
-      await window.storage.set(VISITOR_KEY, JSON.stringify(visitors), true);
-    }
-  } catch (e) {}
+// Cleanup on exit
+window.addEventListener('beforeunload', () => {
+  clearInterval(counterInterval);
 });
 
-// Minimal dots for menu only
-const dots = [];
-const numDots = 40; // Reduced significantly
-
-for(let i = 0; i < numDots; i++){
-  const dot = document.createElement('div');
-  dot.className = 'dot';
-  dot.style.left = Math.random() * 100 + '%';
-  dot.style.top = Math.random() * 100 + '%';
-  document.getElementById('menu').appendChild(dot);
-  dots.push(dot);
-}
-
-// Simple static animation for dots
-let dotFrame = 0;
-function animateDots() {
-  dotFrame++;
-  dots.forEach((dot, i) => {
-    const offset = (dotFrame + i * 10) * 0.02;
-    dot.style.opacity = 0.3 + Math.sin(offset) * 0.2;
-  });
-  if (document.getElementById('menu').style.display !== 'none') {
-    requestAnimationFrame(animateDots);
-  }
-}
-animateDots();
-
+// Game loading
 const playBtn = document.getElementById('playBtn');
 const menu = document.getElementById('menu');
 const loadingDiv = document.getElementById('loading');
 const gameFrame = document.getElementById('game_frame');
 
 playBtn.addEventListener('click', () => {
-    menu.classList.add('fade-out');
-
+    menu.classList.add('hidden');
+    loadingDiv.style.display = 'flex';
+    
     setTimeout(() => {
-        menu.style.display = 'none';
-        loadingDiv.style.display = 'flex';
-        
-        setTimeout(() => {
-            loadingDiv.style.display = 'none';
-            gameFrame.style.display = 'block';
+        loadingDiv.style.display = 'none';
+        gameFrame.style.display = 'block';
 
-            if(!window.eaglercraftXOpts){
-              window.eaglercraftXOpts = {
-                container: "game_frame",
-                assetsURI: "https://cdn.jsdelivr.net/gh/mece188/feh@main/assets.epk",
-                localesURI: "lang/",
-                servers: [
-                  {addr: "wss://mc.arch.lol/", name: "ArchMC"},
-                  {addr: "wss://mc.asspixel.net", name: "AssPixel"},
-                  {addr: "wss://sus.shhnowisnottheti.me", name: "Ayunboom"},
-                  {addr: "wss://aeon-network.net/1.8", name: "Aeon"},
-                  {addr: "wss://zentic.org/", name: "Zentic"}
-                ]
-              };
-            }
+        if(!window.eaglercraftXOpts){
+          window.eaglercraftXOpts = {
+            container: "game_frame",
+            assetsURI: "https://cdn.jsdelivr.net/gh/mece188/feh@main/assets.epk",
+            localesURI: "lang/",
+            servers: [
+              {addr: "wss://mc.arch.lol/", name: "ArchMC"},
+              {addr: "wss://mc.asspixel.net", name: "AssPixel"},
+              {addr: "wss://sus.shhnowisnottheti.me", name: "Ayunboom"},
+              {addr: "wss://aeon-network.net/1.8", name: "Aeon"},
+              {addr: "wss://zentic.org/", name: "Zentic"}
+            ]
+          };
+        }
 
-            try { 
-              main(); 
-            } catch(e) { 
-              console.error("Error starting EaglercraftX:", e);
-            }
-        }, 3000);
-    }, 500);
+        try { 
+          main(); 
+        } catch(e) { 
+          console.error("Error starting EaglercraftX:", e);
+        }
+    }, 2000);
 });
 </script>
 
